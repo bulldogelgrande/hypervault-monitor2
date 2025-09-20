@@ -1,16 +1,8 @@
-# Usa la imagen oficial de Playwright para Python con todas las dependencias y navegadores
 FROM mcr.microsoft.com/playwright/python:v1.43.0-jammy
 
-# Prepara el directorio de trabajo
-WORKDIR app
-
-# Copia e instala dependencias de Python
+WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Copia el script de scraping
 COPY scrape_hypervault.py .
-
-# Comando por defecto ejecuta el script
-CMD ["python3", "scrape_hypervault.py"]
+CMD ["python", "scrape_hypervault.py"]
 
