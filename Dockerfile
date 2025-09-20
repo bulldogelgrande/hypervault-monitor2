@@ -12,4 +12,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY scrape_hypervault.py .
 
 # Comando por defecto ejecuta el script
-CMD [python, scrape_hypervault.py]
+CMD ["python3", "scrape_hypervault.py"]
+
