@@ -1,5 +1,5 @@
 # Usa la imagen oficial de Playwright para Python con todas las dependencias y navegadores
-FROM mcr.microsoft.complaywrightpythonv1.43.0-jammy
+FROM mcr.microsoft.com/playwright/python:v1.43.0-jammy
 
 # Prepara el directorio de trabajo
 WORKDIR app
