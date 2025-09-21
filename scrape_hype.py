@@ -15,6 +15,7 @@ utilizan.
 
 from datetime import datetime, timezone
 from playwright.sync_api import sync_playwright, TimeoutError
+import re
 
 # Umbral de capacidad restante (2 millones)
 THRESHOLD = 2_000_000
@@ -106,11 +107,14 @@ def obtener_capacidad_hype() -> tuple[float, float, float]:
             print("No se pudo extraer el texto de la capacidad de HYPE.")
             return 0.0, 0.0, 0.0
 
-        partes = [part.strip() for part in capacidad_texto.split("/") if part.strip()]
-        if len(partes) == 2:
-            usado_str, total_str = partes
-        elif len(partes) == 1:
-            usado_str = total_str = partes[0]
+        # Usa una expresión regular para extraer todas las secuencias numéricas con sufijo K o M
+        # Esto permite capturar '19K', '30K' o '1.2M' aunque no haya barra separadora
+        coincidencias = re.findall(r"\d+(?:\.\d+)?(?:[MK])?", capacidad_texto.upper())
+        if len(coincidencias) >= 2:
+            usado_str, total_str = coincidencias[0], coincidencias[1]
+        elif len(coincidencias) == 1:
+            # si sólo hay un número, asumimos que usado = total
+            usado_str = total_str = coincidencias[0]
         else:
             return 0.0, 0.0, 0.0
 
