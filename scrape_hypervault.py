@@ -1,13 +1,16 @@
 from datetime import datetime, timezone
 from playwright.sync_api import sync_playwright, TimeoutError
-import smtplib
-from email.mime.text import MIMEText
+
 
 # Umbral de capacidad restante (2 millones).
 THRESHOLD = 2_000_000
 
 # Configuración del correo SMTP.
-# Sustituye estas credenciales por las tuyas antes de usar el script.
+# Las variables SMTP_ y EMAIL_TO se mantienen por compatibilidad, pero la
+# funcionalidad de envío de correo se ha deshabilitado para evitar errores
+# de codificación y facilitar el despliegue en entornos donde no se dispone
+# de un servidor SMTP. Si deseas utilizar correo, sustituye las credenciales
+# y reactiva el código correspondiente.
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 SMTP_USER = "tu-correo@gmail.com"
@@ -118,13 +121,14 @@ def obtener_capacidad_usdt0() -> tuple[float, float, float]:
 
 def enviar_alerta(restante: float, usado: float, total: float, ts: str) -> None:
     """
-    Envía un correo de alerta si la capacidad restante es inferior al umbral.
+    Registra una alerta cuando la capacidad restante es inferior al umbral.
 
-    El asunto y cuerpo del correo incluyen los valores numéricos tanto en
-    formato completo como abreviado.
+    En esta versión se ha deshabilitado el envío de correo. En su lugar,
+    se imprime el mensaje de alerta en stdout para que sea capturado por
+    el sistema de logs de Render o por cualquier otra herramienta de
+    monitorización que utilices.
     """
-    asunto = "Hypervault USDT Capacity < 2M"
-    cuerpo = (
+    mensaje = (
         "⚠️ Alerta: Capacidad de USDT0 inferior a 2M\n\n"
         f"• Capacity restante: {restante:.0f} ({abreviar_numero(restante)})\n"
         f"• Capacidad usada: {usado:.0f} ({abreviar_numero(usado)})\n"
@@ -133,17 +137,9 @@ def enviar_alerta(restante: float, usado: float, total: float, ts: str) -> None:
         "• Fuente: app.hypervault.finance/#/earn\n"
         "• Enlace: https://app.hypervault.finance/#/earn\n"
     )
-    # Construye el mensaje de correo.
-    msg = MIMEText(cuerpo)
-    msg["Subject"] = asunto
-    msg["From"] = SMTP_USER
-    msg["To"] = EMAIL_TO
-
-    # Envía el correo usando SMTP.
-    with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
-        server.starttls()
-        server.login(SMTP_USER, SMTP_PASS)
-        server.send_message(msg)
+    # En lugar de enviar un correo, se imprime el mensaje. Puedes sustituir
+    # este print por cualquier sistema de notificación que prefieras.
+    print(mensaje)
 
 def run() -> None:
     """
